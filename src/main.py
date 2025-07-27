@@ -149,33 +149,36 @@ def run_style_transfer(
         
         def closure():
             with torch.no_grad():
-                input_img.clamp_(0, 1)
+                ... # Firstly, clamp the input image to [0, 1]
             
-            optimizer.zero_grad()
-            model_output = style_transfer_model(input_img)
+            # Zero the gradients and perform a forward pass
+            ...
+            model_output = ...
             
-            content_loss = sum(content_loss.loss for content_loss in content_losses)
-            style_loss = sum(style_loss.loss for style_loss in style_losses)
+            # Compute the content and style losses
+            content_loss = ...
+            style_loss = ...
             
-            total_loss = content_weight * content_loss + style_weight * style_loss
+            # Compute the total loss
+            total_loss = ...
             
-            total_loss.backward()
+            # Perform backpropagation
+            ...
             
             run[0] += 1
             
             if run[0] % 50 == 0:
                 print(f"Run {run[0]}: Total loss - {total_loss.item()}, Content loss - {content_loss.item()}, Style loss - {style_loss.item()}")
                 
-                mlflow.log_metric("total_loss", total_loss.item(), step=run[0])
-                mlflow.log_metric("content_loss", content_loss.item(), step=run[0])
-                mlflow.log_metric("style_loss", style_loss.item(), step=run[0])
+                # Log the losses to MLflow
+                mlflow.log_metric(...)
                 
             return total_loss
         
         optimizer.step(closure)
         
     with torch.no_grad():
-        input_img.clamp_(0, 1)
+        ... # Clamp the input image to [0, 1] after training
 
     # ========= 
     # mlflow_utils.log_model_info(style_transfer_model)
@@ -185,7 +188,7 @@ def run_style_transfer(
     # because it only works if we have a model that generates things or computes something for example,
     # but in this case, style_transfer_model is just a feature extractor used for computing losses during training
 
-    # after the training, you can load the model by calling mlflow_utils.load_model(run_id), (you can find run_id in the MLflow UI)
+    # after training, you can load the model by calling mlflow_utils.load_model(run_id), (you can find run_id in the MLflow UI)
     # ========= 
 
     return input_img
@@ -225,9 +228,9 @@ def main(args):
         generated_path = f"img/generated/{args.generated}"
         generated_image.save(generated_path)
         
-        mlflow.log_artifact(generated_path)
-        mlflow.log_artifact(content_path)
-        mlflow.log_artifact(style_path)
+        # Log the generated image and the original content and style images to MLflow
+        mlflow.log_artifact(...)
+        mlflow.log_artifact(...)
         
         
 if __name__ == "__main__":

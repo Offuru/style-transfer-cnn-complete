@@ -21,7 +21,7 @@ class NormalizationLayer(nn.Module):
         self.mean = mean.view(-1, 1, 1)
         self.std = std.view(-1, 1, 1)
     def forward(self, x):
-        return (x - self.mean) / self.std
+        return ... # Normalize the input tensor using the mean and standard deviation
 
 
 class ContentLoss(nn.Module):
@@ -30,7 +30,7 @@ class ContentLoss(nn.Module):
         self.target = target.detach()
 
     def forward(self, x):
-        self.loss = nn.functional.mse_loss(x, self.target, reduction="mean").div(2)
+        self.loss = nn.functional.mse_loss(...) # loss = MSE(x, target) / 2
         return x
 
 
@@ -41,8 +41,6 @@ class StyleLoss(nn.Module):
         self.target = self.target.detach()
 
     def forward(self, x):
-        G, channels, features = gram_matrix(x)
-        self.loss = nn.functional.mse_loss(G, self.target, reduction="sum").div(
-            4 * channels**2 * features**2
-        )
+        G, channels, features = ... # Compute the Gram matrix for the input tensor
+        self.loss = nn.functional.mse_loss(...) # loss = MSE(G, target) / (4 * channels^2 * features^2)
         return x
