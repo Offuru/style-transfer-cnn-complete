@@ -1,6 +1,7 @@
 import mlflow
 import torch
 from mlflow.models import infer_signature
+import mlflow.pytorch
 
 
 def log_model_info(model):
@@ -25,12 +26,26 @@ def log_trained_model(model, imsize, device):
     input_example = torch.randn(1, 3, imsize, imsize).to(device)
     output_example = model(input_example)
     
-    signature = infer_signature(input_example.cpu().detach(), output_example.cpu().detach())
+    import logging
+    logging.getLogger("mlflow").setLevel(logging.ERROR)
+
+    signature = infer_signature(
+        input_example.cpu().numpy(),
+        output_example.detach().cpu().numpy()
+    )
     
     mlflow.pytorch.log_model(
         model, "style_transfer_model", 
         input_example=input_example.cpu().numpy(),
         signature=signature
     )
+
+
+def load_model(run_id):
+    """
+    Load a model from a specific run ID.
+    """
+    model_uri = f"runs:/{run_id}/style_transfer_model"
+    return mlflow.pytorch.load_model(model_uri)
     
     
