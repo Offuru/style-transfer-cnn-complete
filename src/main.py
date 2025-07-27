@@ -176,12 +176,19 @@ def run_style_transfer(
         
     with torch.no_grad():
         input_img.clamp_(0, 1)
-        
-    mlflow_utils.log_model_info(style_transfer_model)
-    mlflow_utils.log_trained_model(style_transfer_model, image_size, device)
-    
-    return input_img
 
+    # ========= 
+    # mlflow_utils.log_model_info(style_transfer_model)
+    # mlflow_utils.log_trained_model(style_transfer_model, image_size, device)
+    
+    # Used for saving the model weights and architecture, but it doesn't really work in this case,
+    # because it only works if we have a model that generates things or computes something for example,
+    # but in this case, style_transfer_model is just a feature extractor used for computing losses during training
+
+    # after the training, you can load the model by calling mlflow_utils.load_model(run_id), (you can find run_id in the MLflow UI)
+    # ========= 
+
+    return input_img
 
 def main(args):
     setup()
@@ -218,9 +225,9 @@ def main(args):
         generated_path = f"img/generated/{args.generated}"
         generated_image.save(generated_path)
         
-        # mlflow.log_artifact(generated_path)
-        # mlflow.log_artifact(content_path)
-        # mlflow.log_artifact(style_path)
+        mlflow.log_artifact(generated_path)
+        mlflow.log_artifact(content_path)
+        mlflow.log_artifact(style_path)
         
         
 if __name__ == "__main__":
